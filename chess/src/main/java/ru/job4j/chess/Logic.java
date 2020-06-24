@@ -25,18 +25,28 @@ public class Logic {
         boolean rst = false;
         int index = this.findBy(source);
         if (index != -1) {
-            Cell[] steps = this.figures[index].way(source, dest);
-            if (steps.length > 0 && steps[steps.length - 1].equals(dest)) {
-                for(Cell cell : steps) {
-                    for(Figure figure : figures) {
-                        if(figure != null && figure.position().equals(cell)) {
-                            return false;
-                        }
+            try {
+                Cell[] steps = this.figures[index].way(source, dest);
+                rst = moveCheck(steps, dest, index);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+        }
+        return rst;
+    }
+
+    private boolean moveCheck(Cell[] steps, Cell dest, int index) {
+        boolean rst = false;
+        if (steps.length > 0 && steps[steps.length - 1].equals(dest)) {
+            for(Cell cell : steps) {
+                for(Figure figure : figures) {
+                    if(figure != null && figure.position().equals(cell)) {
+                        return false;
                     }
                 }
-                rst = true;
-                this.figures[index] = this.figures[index].copy(dest);
             }
+            this.figures[index] = this.figures[index].copy(dest);
+            rst = true;
         }
         return rst;
     }
