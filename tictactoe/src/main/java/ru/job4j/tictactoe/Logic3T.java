@@ -1,6 +1,8 @@
 package ru.job4j.tictactoe;
 
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class Logic3T {
     private final Figure3T[][] table;
@@ -25,20 +27,28 @@ public class Logic3T {
     }
 
     public boolean isWinnerX() {
-        return this.fillBy(Figure3T::hasMarkX, 0, 0, 1, 0)
-                || this.fillBy(Figure3T::hasMarkX, 0, 0, 0, 1)
-                || this.fillBy(Figure3T::hasMarkX, 0, 0, 1, 1)
-                || this.fillBy(Figure3T::hasMarkX, this.table.length - 1, 0, -1, 1);
+        return this.winCheck(Figure3T::hasMarkX);
     }
 
     public boolean isWinnerO() {
-        return this.fillBy(Figure3T::hasMarkO, 0, 0, 1, 0)
-                || this.fillBy(Figure3T::hasMarkO, 0, 0, 0, 1)
-                || this.fillBy(Figure3T::hasMarkO, 0, 0, 1, 1)
-                || this.fillBy(Figure3T::hasMarkO, this.table.length - 1, 0, -1, 1);
+        return this.winCheck(Figure3T::hasMarkO);
+    }
+
+    public boolean winCheck(Predicate<Figure3T> predicate) {
+        return this.fillBy(predicate, 0, 0, 1, 0)
+                || this.fillBy(predicate, 0, 0, 0, 1)
+                || this.fillBy(predicate, 0, 0, 1, 0)
+                || this.fillBy(predicate, 0, 0, 1, 1)
+                || this.fillBy(predicate, 1, 0, 0, 1)
+                || this.fillBy(predicate, 2, 0, 0, 1)
+                || this.fillBy(predicate, 2, 0, -1, 1)
+                || this.fillBy(predicate, 2, 1, -1, 0)
+                || this.fillBy(predicate, 2, 2, -1, 0);
     }
 
     public boolean hasGap() {
-        return true;
+        return List.of(table).stream()
+                .flatMap(Stream::of)
+                .anyMatch(figure -> !figure.hasMarkO() && !figure.hasMarkX());
     }
 }
